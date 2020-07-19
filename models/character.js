@@ -22,7 +22,9 @@ const charSchema = new mongoose.Schema({
 	job2: String,
 	job3: String,
 	stylized: String,
-	limited: Boolean
+	limited: Boolean,
+	desc: String,
+	fullName: String
 });
 
 const Character = mongoose.model("Character", charSchema);

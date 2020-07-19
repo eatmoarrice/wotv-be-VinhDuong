@@ -12,7 +12,7 @@ exports.getAllCharacters = async (request, response) => {
 				// element: { $in: element },
 				// rarity: { $in: rarity }
 			},
-			{ element: 0, job1: 0, job2: 0, job3: 0 }
+			{ element: 0, job1: 0, job2: 0, job3: 0, desc: 0, fullName: 0 }
 		);
 
 		const numDocuments = await Character.countDocuments();

@@ -12,7 +12,12 @@ var app = express();
 /* GET home page. */
 
 mongoose
-	.connect("mongodb://localhost/test")
+	.connect(process.env.DB, {
+		useCreateIndex: true,
+		useNewUrlParser: true,
+		useFindAndModify: false,
+		useUnifiedTopology: true
+	})
 	.then(() => console.log("connected to database"))
 	.catch((err) => console.error("Could not connect to database!", err));
 

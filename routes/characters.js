@@ -1,12 +1,13 @@
 var express = require("express");
-const { getAllCharacters } = require("../controllers/characterController");
+const { getAllCharacters, createCharacter } = require("../controllers/characterController");
 
 var router = express.Router();
 
-router.route("/").get(getAllCharacters);
+router.route("/characters").get(getAllCharacters);
+router.route("/characters/create").post(createCharacter);
 // .post(requiresLogin, requiresHost, createExperience)
 
-router.route("/:name");
+// router.route("characters/:name");
 // .put(requiresLogin, requiresHost, updateExperience)
 // .put(updateExperience)
 // .get(findOneExperience);

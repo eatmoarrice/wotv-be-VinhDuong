@@ -1,17 +1,16 @@
-const Character = require("../models/character");
+const { Character } = require("../models/character");
 const { response } = require("express");
 
 exports.getAllCharacters = async (request, response) => {
 	try {
-		const element = request.query.element || "";
-		const rarity = request.query.rarity || "";
-		const job = requiest.query.job || "";
+		// const element = request.query.element || "";
+		// const rarity = request.query.rarity || "";
+		// const job = requiest.query.job || "";
 
 		const charList = await Character.find({
-			element: { $in: element },
-			rarity: { $in: rarity }
+			// element: { $in: element },
+			// rarity: { $in: rarity }
 		});
-		console.log(charList);
 
 		const numDocuments = await Character.countDocuments();
 
@@ -26,7 +25,23 @@ exports.getAllCharacters = async (request, response) => {
 	} catch (error) {
 		return response.status(400).json({
 			status: "Fail",
-			message: "get character list failed"
+			message: error
+		});
+	}
+};
+exports.createCharacter = async (request, response) => {
+	try {
+		let char = await Character.findOne({ name: request.body.name });
+		if (char) return response.status(400).send("Character already exists");
+		char = new Character(request.body);
+		console.log("har", char);
+		await char.save();
+
+		response.send({ status: "success", name: char.name });
+	} catch (error) {
+		return response.status(400).json({
+			status: "Fail",
+			message: "Could not create new character"
 		});
 	}
 };

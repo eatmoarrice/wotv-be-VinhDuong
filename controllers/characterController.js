@@ -7,10 +7,13 @@ exports.getAllCharacters = async (request, response) => {
 		// const rarity = request.query.rarity || "";
 		// const job = requiest.query.job || "";
 
-		const charList = await Character.find({
-			// element: { $in: element },
-			// rarity: { $in: rarity }
-		});
+		const charList = await Character.find(
+			{
+				// element: { $in: element },
+				// rarity: { $in: rarity }
+			},
+			{ element: 0, job1: 0, job2: 0, job3: 0 }
+		);
 
 		const numDocuments = await Character.countDocuments();
 
@@ -29,6 +32,34 @@ exports.getAllCharacters = async (request, response) => {
 		});
 	}
 };
+
+exports.getSingleCharacter = async (request, response) => {
+	try {
+		// const element = request.query.element || "";
+		// const rarity = request.query.rarity || "";
+		// const job = requiest.query.job || "";
+
+		const charDetails = await Character.findOne({
+			name: request.params.name
+			// element: { $in: element },
+			// rarity: { $in: rarity }
+		});
+
+		response
+			.status(200)
+			.json({
+				status: "success",
+				data: charDetails
+			})
+			.send(charDetails);
+	} catch (error) {
+		return response.status(400).json({
+			status: "Fail",
+			message: error
+		});
+	}
+};
+
 exports.createCharacter = async (request, response) => {
 	try {
 		let char = await Character.findOne({ name: request.body.name });

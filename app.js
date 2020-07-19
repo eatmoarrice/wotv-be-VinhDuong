@@ -5,6 +5,7 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
+const charactersRouter = require("./routes/characters");
 const profileRouter = require("./routes/profile");
 const auth = require("./routes/auth");
 require("dotenv").config({ path: ".env" });
@@ -23,6 +24,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
+app.use("/characters", charactersRouter);
 app.use("/users", usersRouter);
 app.use("/api/auth", auth); //login
 app.use("/profile", profileRouter);

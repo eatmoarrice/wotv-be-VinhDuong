@@ -3,6 +3,7 @@ Joi.objectId = require("joi-objectid")(Joi);
 const mongoose = require("mongoose");
 const users = require("./users");
 var express = require("express");
+require("dotenv").config({ path: ".env" });
 var router = express.Router();
 // var cors = require("cors");
 // require("dotenv").config({ path: ".env" });

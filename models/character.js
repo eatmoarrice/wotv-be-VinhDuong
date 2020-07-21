@@ -24,7 +24,9 @@ const charSchema = new mongoose.Schema({
 	stylized: String,
 	limited: Boolean,
 	desc: String,
-	fullName: String
+	fullName: String,
+	stats: Object,
+	board: Array
 });
 
 const Character = mongoose.model("Character", charSchema);

@@ -1,6 +1,6 @@
 var express = require("express");
 const { getAllCharacters, createCharacter, getSingleCharacter } = require("../controllers/characterController");
-const { route } = require("./users");
+// const { route } = require("./users");
 
 var router = express.Router();
 

@@ -20,7 +20,8 @@ const userSchema = new mongoose.Schema({
 		required: [true, "Password is required"],
 		maxlength: 1024
 	},
-	type: { type: String, enum: ["user", "editor", "admin"], default: "user" }
+	type: { type: String, enum: ["user", "editor", "admin"], default: "user" },
+	tokens: Array
 });
 
 const User = mongoose.model("User", userSchema);

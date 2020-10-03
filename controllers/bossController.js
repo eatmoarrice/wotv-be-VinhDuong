@@ -61,7 +61,7 @@ exports.createBoss = async (request, response) => {
 
 exports.updateBoss = async (request, response, next) => {
 	try {
-		const boss = await Boss.findById(request.body.id);
+		const boss = await Boss.findById(request.body._id);
 		if (!boss) {
 			throw new Error("There is no such boss");
 		}

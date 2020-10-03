@@ -58,3 +58,19 @@ exports.createBoss = async (request, response) => {
 		});
 	}
 };
+
+exports.updateBoss = async (request, response, next) => {
+	const boss = await Boss.findOne({ _id: request.params.bossID });
+	if (!boss) {
+		throw new Error("There is no such boss");
+	}
+
+	const bossFields = Object.keys(request.body);
+	bossFields.map((field) => (boss[field] = request.body[field]));
+	await bossFields.save();
+
+	response.status(200).json({
+		status: "Success",
+		data: bossFields
+	});
+};

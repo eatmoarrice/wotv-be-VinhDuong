@@ -25,7 +25,7 @@ exports.getAllBosses = async (request, response) => {
 
 exports.getSingleBoss = async (request, response) => {
 	try {
-		const bossDetails = await Boss.findById({ name: { $regex: request.params.name, $options: "i" } });
+		const bossDetails = await Boss.findOne({ name: { $regex: request.params.name, $options: "i" } });
 
 		response
 			.status(200)
@@ -37,7 +37,7 @@ exports.getSingleBoss = async (request, response) => {
 	} catch (error) {
 		return response.status(400).json({
 			status: "Fail",
-			message: error
+			message: error.message
 		});
 	}
 };

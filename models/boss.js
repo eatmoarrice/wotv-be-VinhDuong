@@ -14,7 +14,8 @@ const bossSchema = new mongoose.Schema({
 		enum: ["water", "fire", "ice", "wind", "earth", "lightning", "light", "dark", "none"]
 	},
 	res: Object,
-	author: String
+	author: String,
+	description: String
 });
 
 const Boss = mongoose.model("Boss", bossSchema);

@@ -122,19 +122,3 @@ exports.createCharacter = async (request, response) => {
 // 		});
 // 	}
 // };
-
-// exports.updateExperience = async (request, response, next) => {
-// 	const exp = await Experience.findOne({ _id: request.params.experienceId });
-// 	if (!exp) {
-// 		throw new Error("ko co exp");
-// 	}
-
-// 	const expFields = Object.keys(request.body);
-// 	expFields.map((field) => (exp[field] = request.body[field]));
-// 	await exp.save();
-
-// 	response.status(200).json({
-// 		status: "Success",
-// 		data: exp
-// 	});
-// };

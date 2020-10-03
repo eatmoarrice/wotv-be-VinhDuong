@@ -25,7 +25,7 @@ exports.getAllBosses = async (request, response) => {
 
 exports.getSingleBoss = async (request, response) => {
 	try {
-		const bossDetails = await Boss.findOne({ name: { $regex: request.params.name, $options: "i" } });
+		const bossDetails = await Boss.findById({ name: { $regex: request.params.name, $options: "i" } });
 
 		response
 			.status(200)
@@ -46,6 +46,7 @@ exports.createBoss = async (request, response) => {
 	try {
 		let boss = await Boss.findOne({ name: { $regex: request.body.name, $options: "i" } });
 		if (boss) return response.status(400).send("This boss already exists");
+		if (boss.key !== "PandaEatsRice420") return response.status(403).send("Only elites can create new bosses!");
 		boss = new Boss(request.body);
 
 		await boss.save();
@@ -65,6 +66,7 @@ exports.updateBoss = async (request, response, next) => {
 		if (!boss) {
 			throw new Error("There is no such boss");
 		}
+		if (boss.key !== "PandaEatsRice420") throw new Error("No entry!");
 
 		const bossFields = Object.keys(request.body);
 		bossFields.map((field) => (boss[field] = request.body[field]));

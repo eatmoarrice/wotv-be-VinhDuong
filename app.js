@@ -6,6 +6,8 @@ var logger = require("morgan");
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 const charactersRouter = require("./routes/characters");
+const jobRouter = require("./routes/jobs");
+const bossRouter = require("./routes/bosses");
 const profileRouter = require("./routes/profile");
 const skillRouter = require("./routes/skills");
 const auth = require("./routes/auth");
@@ -27,6 +29,8 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/", indexRouter);
 app.use(charactersRouter);
 app.use(skillRouter);
+app.use(jobRouter);
+app.use(bossRouter);
 app.use("/users", usersRouter);
 app.use("/api/auth", auth); //login
 app.use("/profile", profileRouter);

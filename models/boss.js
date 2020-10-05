@@ -15,7 +15,8 @@ const bossSchema = new mongoose.Schema({
 	},
 	res: Object,
 	author: String,
-	description: String
+	description: String,
+	url: String
 });
 
 const Boss = mongoose.model("Boss", bossSchema);

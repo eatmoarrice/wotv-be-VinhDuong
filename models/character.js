@@ -14,9 +14,9 @@ const charSchema = new mongoose.Schema({
 	},
 	element: {
 		type: String,
-		// required: [true, "Element is required"],
+		required: [true, "Element is required"],
 		trim: true
-		// enum: ["Water", "Fire", "Ice", "Wind", "Earth", "Lightning", "Light", "Dark"]
+		// enum: ["water", "fire", "ice", "wind", "earth", "lightning", "light", "dark"]
 	},
 	job1: String,
 	job2: String,
@@ -26,7 +26,9 @@ const charSchema = new mongoose.Schema({
 	desc: String,
 	fullName: String,
 	stats: Object,
-	board: Array
+	board: Array,
+	vetted: Boolean,
+	res: Object
 });
 
 const Character = mongoose.model("Character", charSchema);

@@ -39,11 +39,7 @@ exports.getSingleCharacter = async (request, response) => {
 		// const rarity = request.query.rarity || "";
 		// const job = requiest.query.job || "";
 
-		const charDetails = await Character.findOne({
-			name: request.params.name
-			// element: { $in: element },
-			// rarity: { $in: rarity }
-		});
+		const charDetails = await Character.findById(request.params.id);
 
 		response
 			.status(200)
@@ -77,48 +73,23 @@ exports.createCharacter = async (request, response) => {
 	}
 };
 
-// exports.createExperience = async (request, response) => {
-// 	try {
-// 		const { title, duration, images, country, price } = request.body;
+exports.editCharacter = async (request, response, next) => {
+	try {
+		let char = await Character.findById(request.params.id);
+		if (!char) {
+			throw new Error("There is no such character");
+		}
+		if (request.body.key !== "PandaEatsRice420") throw new Error("No entry!");
+		const charFields = Object.keys(request.body);
+		charFields.map((field) => (char[field] = request.body[field]));
+		await char.save();
 
-// 		if (!title || !duration || !images || !country || !price) {
-// 			return response.status(400).json({
-// 				message: "Title, Duration, Images, Country and Price are required"
-// 			});
-// 		}
-
-// 		const newExperience = await Experience.create(request.body);
-
-// 		response.status(200).json({
-// 			status: "Success",
-// 			data: newExperience
-// 		});
-// 	} catch (error) {
-// 		response.status(400).json({
-// 			status: "Fail",
-// 			message: error.message
-// 		});
-// 	}
-// };
-
-// exports.findOneExperience = async (request, response) => {
-// 	try {
-// 		// why params
-
-// 		const exp = await Experience.findOne({ _id: request.params.experienceId });
-// 		if (!exp) throw new Error("No experience here");
-
-// 		const owner = await User.findOne({ _id: exp.owner });
-
-// 		console.log(exp);
-// 		response.status(200).json({
-// 			status: "Success",
-// 			data: { exp: exp, ownerInfo: owner }
-// 		});
-// 	} catch (error) {
-// 		response.status(400).json({
-// 			status: "Fail",
-// 			message: error.message
-// 		});
-// 	}
-// };
+		response.send({ status: "success", name: char.name });
+	} catch (error) {
+		console.log(error);
+		return response.status(400).json({
+			status: "Fail",
+			message: error.message
+		});
+	}
+};

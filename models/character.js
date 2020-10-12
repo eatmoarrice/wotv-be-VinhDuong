@@ -14,7 +14,7 @@ const charSchema = new mongoose.Schema({
 	},
 	element: {
 		type: String,
-		required: [true, "Element is required"],
+		// required: [true, "Element is required"],
 		trim: true
 		// enum: ["water", "fire", "ice", "wind", "earth", "lightning", "light", "dark"]
 	},
@@ -23,6 +23,7 @@ const charSchema = new mongoose.Schema({
 	job3: String,
 	stylized: String,
 	limited: Boolean,
+	description: String,
 	desc: String,
 	fullName: String,
 	stats: Object,

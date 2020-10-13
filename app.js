@@ -10,6 +10,7 @@ const jobRouter = require("./routes/jobs");
 const bossRouter = require("./routes/bosses");
 const profileRouter = require("./routes/profile");
 const skillRouter = require("./routes/skills");
+const boardRouter = require("./routes/boards");
 const auth = require("./routes/auth");
 require("dotenv").config({ path: ".env" });
 var app = express();
@@ -31,6 +32,7 @@ app.use(charactersRouter);
 app.use(skillRouter);
 app.use(jobRouter);
 app.use(bossRouter);
+app.use(boardRouter);
 app.use("/users", usersRouter);
 app.use("/api/auth", auth); //login
 app.use("/profile", profileRouter);

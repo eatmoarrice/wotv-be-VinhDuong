@@ -9,7 +9,7 @@ router.route("/characters/id/:id").get(getSingleCharacterByID);
 router.route("/characters/:name").get(getSingleCharacter);
 router.route("/characters/id/:id/update").put(editCharacter);
 router.route("/characters/create").post(createCharacter);
-// router.route("/characters/update/update-database").get(updateDatabase);
+router.route("/characters/update/update-database").get(updateDatabase);
 
 // .post(requiresLogin, requiresHost, createExperience)
 

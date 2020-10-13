@@ -1,4 +1,5 @@
 const { Character } = require("../models/character");
+const { Board } = require("../models/board");
 const { response } = require("express");
 const { extractSheets } = require("spreadsheet-to-json");
 const fs = require("fs");
@@ -61,11 +62,7 @@ exports.getSingleCharacterByID = async (request, response) => {
 
 exports.getSingleCharacter = async (request, response) => {
 	try {
-		// const element = request.query.element || "";
-		// const rarity = request.query.rarity || "";
-		// const job = requiest.query.job || "";
-
-		const charDetails = await Character.findOne({ name: request.params.name });
+		const charDetails = await Character.findOne({ $or: [{ name: request.params.name }, { shortname: request.params.name }] });
 
 		response
 			.status(200)
@@ -160,16 +157,16 @@ exports.updateDatabase = async (request, response, next) => {
 		await extractSheets(
 			{
 				// your google spreadhsheet key
-				spreadsheetKey: "1zYxhb9LCZ68t94mNV4BO52cP_puWfctZgjjxYNJ8RZY",
+				spreadsheetKey: "1Azn8UY3MapOmuVtdq2dfUqWCJv-cIqc3yeXduV0_oIo",
 				// your google oauth2 credentials or API_KEY
 				credentials: require("../cred/cred.json"),
 				// optional: names of the sheets you want to extract
-				sheetsToExtract: ["Units"]
+				sheetsToExtract: ["Export"]
 				// optional: custom function to parse the cells
 				// formatCell: formatCell
 			},
 			function (err, data) {
-				data.Units.forEach((item) => {
+				data.Export.forEach((item) => {
 					let newObj = { res: {} };
 					for (let [key, value] of Object.entries(item)) {
 						// if (skip.includes(key.toLowerCase())) {
@@ -181,6 +178,8 @@ exports.updateDatabase = async (request, response, next) => {
 						if (resArray.includes(key.toLowerCase())) {
 							newObj.res[key.toLowerCase()] = processedValue;
 						} else newObj[key.toLowerCase()] = processedValue;
+						if (newObj.vetted && newObj.vetter === "FALSE") newObj.vetted = false;
+						else newObj.vetted = true;
 					}
 					newArray.push(newObj);
 				});
@@ -189,16 +188,23 @@ exports.updateDatabase = async (request, response, next) => {
 		console.log(newArray);
 		let successArray = [];
 		for (let i = 0; i < newArray.length; i++) {
+			if (!newArray[i].name) continue;
 			let char = await Character.findOne({ name: newArray[i].name });
 			console.log(newArray[i].name, ": ", char);
 			if (!char) {
 				char = new Character(newArray[i]);
 				console.log("new char", char);
 			}
-
+			let board = new Board({ forID: char._id, owner: char.name });
+			board.board = Array(60).fill({
+				type: "",
+				job: "",
+				text: ""
+			});
 			const charFields = Object.keys(newArray[i]);
 			charFields.map((field) => (char[field] = newArray[i][field]));
 			await char.save();
+			await board.save();
 			successArray.push(char.name);
 		}
 

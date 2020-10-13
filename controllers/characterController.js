@@ -13,8 +13,7 @@ exports.getAllCharacters = async (request, response) => {
 
 		const charList = await Character.find(
 			{
-				// element: { $in: element },
-				// rarity: { $in: rarity }
+				vetted: true
 			},
 			{ desc: 0, fullName: 0, board: 0 }
 		);

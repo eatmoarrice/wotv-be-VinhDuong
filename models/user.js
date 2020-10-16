@@ -1,40 +1,67 @@
 const mongoose = require("mongoose");
-const Joi = require("joi");
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
+const validator = require("validator");
 const jwt = require("jsonwebtoken");
+require("dotenv");
+const userSchema = new mongoose.Schema(
+	{
+		email: {
+			type: String,
+			required: [true, "Email is required"],
+			unique: true,
+			trim: true,
+			lowercase: true,
+			validate(val) {
+				if (!validator.isEmail(val)) {
+					throw new Error("Invalid email address");
+				}
+			}
+		},
+		username: {
+			type: String,
+			required: [true, "Username is required"],
+			trim: true,
+			unique: true
+		},
+		password: {
+			type: String,
+			required: [true, "Password is required"]
+		},
+		type: { type: String, enum: ["user", "editor", "admin"], default: "user" },
+		tokens: Array
+	},
+	{
+		timestamps: true
+	}
+);
 
-const userSchema = new mongoose.Schema({
-	email: {
-		type: String,
-		required: [true, "Email is required"],
-		unique: true,
-		trim: true,
-		lowercase: true
-	},
-	name: {
-		type: String,
-		required: [true, "Name is required"],
-		trim: true
-	},
-	password: {
-		type: String,
-		required: [true, "Password is required"],
-		maxlength: 1024
-	},
-	type: { type: String, enum: ["user", "editor", "admin"], default: "user" },
-	tokens: Array
+userSchema.pre("save", async function (next) {
+	if (!this.isModified("password")) return next();
+	this.password = await bcrypt.hash(this.password, saltRounds);
+	next();
 });
+
+userSchema.statics.loginWithEmail = async (email, password) => {
+	const user = await User.findOne({ email: email });
+	if (!user) {
+		throw new Error("User does not exist!");
+	}
+
+	const match = await bcrypt.compare(password, user.password);
+	if (!match) {
+		throw new Error("Incorrect password");
+	}
+
+	return user;
+};
+
+userSchema.methods.generateToken = function () {
+	const user = this;
+	const token = jwt.sign({ id: user._id }, process.env.HASH_SECRET, { expiresIn: "7d" });
+	return token;
+};
 
 const User = mongoose.model("User", userSchema);
 
-function validateUser(user) {
-	const schema = {
-		name: Joi.string().min(5).max(50).required(),
-		email: Joi.string().min(5).max(255).required(),
-		password: Joi.string().min(5).max(1024).required(),
-		type: Joi.string().min(4).max(6).required()
-	};
-	return Joi.validate(user, schema);
-}
-
 exports.User = User;
-exports.validate = validateUser;

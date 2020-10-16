@@ -19,9 +19,9 @@ cloudinary.config({
 
 const coords = {
 	slash: [34, 95],
-	pierce: [106, 95],
+	pierce: [250, 95],
 	strike: [178, 95],
-	missile: [250, 95],
+	missile: [106, 95],
 	magic: [322, 95],
 	fire: [34, 212],
 	ice: [106, 212],
@@ -93,7 +93,6 @@ exports.createBoss = async (request, response) => {
 	try {
 		let boss = await Boss.findOne({ name: { $regex: request.body.name, $options: "i" } });
 		if (boss) return response.status(400).send("This boss already exists");
-		if (request.body.key !== "PandaEatsRice420") return response.status(403).send("Only elites can create new bosses!");
 		boss = new Boss(request.body);
 		let image = await processImage(boss);
 		boss.url = image;
@@ -110,12 +109,10 @@ exports.createBoss = async (request, response) => {
 
 exports.updateBoss = async (request, response, next) => {
 	try {
-		const boss = await Boss.findById(request.body._id);
+		const boss = await Boss.findById(request.params.id);
 		if (!boss) {
 			throw new Error("There is no such boss");
 		}
-		if (request.body.key !== "PandaEatsRice420") throw new Error("No entry!");
-
 		const bossFields = Object.keys(request.body);
 		bossFields.map((field) => (boss[field] = request.body[field]));
 		let image = await processImage(boss);

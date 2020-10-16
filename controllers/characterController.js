@@ -177,14 +177,15 @@ exports.updateDatabase = async (request, response, next) => {
 						if (resArray.includes(key.toLowerCase())) {
 							newObj.res[key.toLowerCase()] = processedValue;
 						} else newObj[key.toLowerCase()] = processedValue;
-						if (newObj.vetted && newObj.vetter === "FALSE") newObj.vetted = false;
-						else newObj.vetted = true;
 					}
+					if (newObj.vetted && newObj.vetted === "FALSE") newObj.vetted = false;
+					else newObj.vetted = true;
 					newArray.push(newObj);
+					console.log(newObj.vetted);
 				});
 			}
 		);
-		console.log(newArray);
+		// console.log(newArray);
 		let successArray = [];
 		for (let i = 0; i < newArray.length; i++) {
 			if (!newArray[i].name) continue;

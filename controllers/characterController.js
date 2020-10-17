@@ -63,7 +63,7 @@ exports.getSingleCharacterByID = async (request, response) => {
 exports.getSingleCharacter = async (request, response) => {
 	try {
 		let name = request.params.name;
-		const charDetails = await Character.findOne({ $or: [{ name: { $regex: name, $options: 'i' } }, { shortname: { $regex: name, $options: 'i' } }] });
+		const charDetails = await Character.findOne({ $or: [{ name: { $regex: '^' + name + '$', $options: 'i' } }, { shortname: { $regex: '^' + name + '$', $options: 'i' } }] });
 		if (!charDetails) throw new Error('Not found!');
 		response
 			.status(200)
@@ -229,7 +229,7 @@ exports.createResImg = async (req, res, next) => {
 	try {
 		const char = await Character.findById(req.params.id);
 		if (!char) throw new Error("Character doesn't exist!");
-		await createImage(char.name, char.ref, char.res, char.job1, char.job2, char.job3);
+		await createImage(char.name, char.ref, char.res, char.job1, char.job2, char.job3, char.rarity);
 		res.status(200).json({ status: true, message: 'success!' });
 	} catch (err) {
 		res.status(400).json({ status: false, message: err });
@@ -240,7 +240,7 @@ exports.createResAll = async (req, res, next) => {
 	try {
 		const cursor = Character.find({ vetted: true });
 		for await (const char of cursor) {
-			let url = await createImage(char.name, char.ref, char.res, char.job1, char.job2, char.job3);
+			let url = await createImage(char.name, char.ref, char.res, char.job1, char.job2, char.job3, char.rarity);
 			if (url) {
 				char.resImgUrl = url;
 				await char.save();

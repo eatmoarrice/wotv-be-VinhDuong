@@ -7,7 +7,7 @@ const cloudinary = require('cloudinary');
 const baseImageUrl = 'data/baseImages/unitRes.png';
 const fontGreenUrl = 'data/font/georgia_32_green.fnt';
 const fontRedUrl = 'data/font/georgia_32_red.fnt';
-const fontWhiteUrl = 'data/font/candara_32_white.fnt';
+const fontWhiteUrl = 'data/font/candara_32_rainbow.fnt';
 const arrowUpUrl = 'data/img/up.png';
 const arrowDownUrl = 'data/img/down.png';
 const fs = require('fs');
@@ -21,7 +21,9 @@ cloudinary.config({
 console.log(process.env.CLOUD_API);
 
 const coords = {
-	name: [50, 721],
+	borderTop: [36, 178],
+	borderBot: [208, 440],
+	name: [50, 725],
 	avatar: [37, 179],
 	job1: [],
 	job2: [],
@@ -56,7 +58,7 @@ const coords = {
 	doom: [968, 917],
 };
 
-module.exports = exports = async function createUnitResImage(name, ref, resistance, job1, job2, job3) {
+module.exports = exports = async function createUnitResImage(name, ref, resistance, job1, job2, job3, rarity) {
 	try {
 		if (fs.existsSync('public/img/char/' + ref + '.png')) {
 			return '';
@@ -64,6 +66,9 @@ module.exports = exports = async function createUnitResImage(name, ref, resistan
 	} catch (err) {
 		console.error(err);
 	}
+	const borderTop = await Jimp.read(`data/img/frame/${rarity}.png`);
+	borderTop.rotate(180);
+	const borderBot = await Jimp.read(`data/img/frame/${rarity}.png`);
 	const baseImage = await Jimp.read(baseImageUrl);
 	const fontGreen = await Jimp.loadFont(fontGreenUrl);
 	const fontRed = await Jimp.loadFont(fontRedUrl);
@@ -93,7 +98,7 @@ module.exports = exports = async function createUnitResImage(name, ref, resistan
 	arrowUp.resize(Jimp.AUTO, 60);
 	arrowDown.resize(Jimp.AUTO, 60);
 	const avatar = await Jimp.read(`data/source/${ref}_m.png`);
-	avatar.autocrop(0.1);
+	avatar.autocrop(0.2);
 	let textImage = await Jimp.read('data/img/transparent.png');
 	let keys = Object.entries(resistance);
 	if (keys[0][0] == '$init') keys.splice(0, 1);
@@ -101,19 +106,23 @@ module.exports = exports = async function createUnitResImage(name, ref, resistan
 		console.log(`${key}: ${value}`);
 		let number = value + '%';
 		let offsetX = 0;
-		if (value > 0) {
-			if (value >= 100) {
-				offsetX = 5;
-				number = 'Imm.';
-			}
+		try {
+			if (value > 0) {
+				if (value >= 100) {
+					offsetX = 5;
+					number = 'Imm.';
+				}
 
-			textImage.composite(arrowUp, coords[key][0] + 30, coords[key][1] - 60);
-			textImage.print(fontGreen, coords[key][0] - offsetX, coords[key][1], number);
-		} else if (value < 0) {
-			textImage.composite(arrowDown, coords[key][0] + 30, coords[key][1] - 60);
-			textImage.print(fontRed, coords[key][0], coords[key][1], number);
-		} else {
-			textImage.print(fontWhite, coords[key][0] + 20, coords[key][1], '--');
+				textImage.composite(arrowUp, coords[key][0] + 30, coords[key][1] - 60);
+				textImage.print(fontGreen, coords[key][0] - offsetX, coords[key][1], number);
+			} else if (value < 0) {
+				textImage.composite(arrowDown, coords[key][0] + 30, coords[key][1] - 60);
+				textImage.print(fontRed, coords[key][0], coords[key][1], number);
+			} else {
+				textImage.print(fontWhite, coords[key][0] + 20, coords[key][1], '--');
+			}
+		} catch (err) {
+			console.log(err);
 		}
 	}
 
@@ -137,7 +146,9 @@ module.exports = exports = async function createUnitResImage(name, ref, resistan
 	baseImage.composite(j2, 170, 620);
 	baseImage.composite(j3, 285, 620);
 	baseImage.composite(avatar, coords.avatar[0] + leftGap, coords.avatar[1] + topGap);
-	baseImage.composite(textImage, 0, 0);
+	baseImage.composite(borderTop, coords.borderTop[0], coords.borderTop[1]);
+	baseImage.composite(borderBot, coords.borderBot[0], coords.borderBot[1]);
+	baseImage.composite(textImage, 0, 0, { mode: Jimp.BLEND_SOURCE_OVER, opacityDest: 1, opacitySource: 1 });
 
 	await baseImage.writeAsync('public/img/char/' + ref + '.png');
 	await compressPic('public/img/char/' + ref + '.png', 'public/img/char');

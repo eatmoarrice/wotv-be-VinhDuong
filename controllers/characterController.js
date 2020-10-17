@@ -62,9 +62,8 @@ exports.getSingleCharacterByID = async (request, response) => {
 
 exports.getSingleCharacter = async (request, response) => {
 	try {
-		let name = request.params.name.toLowerCase();
-		name = name[0].toUpperCase() + name.slice(1);
-		const charDetails = await Character.findOne({ $or: [{ name: name }, { shortname: name }] });
+		let name = request.params.name;
+		const charDetails = await Character.findOne({ $or: [{ name: { $regex: name, $options: 'i' } }, { shortname: { $regex: name, $options: 'i' } }] });
 		if (!charDetails) throw new Error('Not found!');
 		response
 			.status(200)

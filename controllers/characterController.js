@@ -229,7 +229,9 @@ exports.createResImg = async (req, res, next) => {
 	try {
 		const char = await Character.findById(req.params.id);
 		if (!char) throw new Error("Character doesn't exist!");
-		await createImage(char.name, char.ref, char.res, char.job1, char.job2, char.job3, char.rarity);
+		let newURL = await createImage(char.name, char.ref, char.res, char.job1, char.job2, char.job3, char.rarity, char.element);
+		char.resImgUrl = newURL;
+		char.save();
 		res.status(200).json({ status: true, message: 'success!' });
 	} catch (err) {
 		res.status(400).json({ status: false, message: err });
@@ -240,7 +242,7 @@ exports.createResAll = async (req, res, next) => {
 	try {
 		const cursor = Character.find({ vetted: true });
 		for await (const char of cursor) {
-			let url = await createImage(char.name, char.ref, char.res, char.job1, char.job2, char.job3, char.rarity);
+			let url = await createImage(char.name, char.ref, char.res, char.job1, char.job2, char.job3, char.rarity, char.element);
 			if (url) {
 				char.resImgUrl = url;
 				await char.save();

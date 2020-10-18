@@ -46,6 +46,9 @@ build/Release
 node_modules/
 jspm_packages/
 
+# data directories
+data/
+
 # TypeScript v1 declaration files
 typings/
 

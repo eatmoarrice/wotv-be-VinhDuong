@@ -91,7 +91,7 @@ exports.getSingleBoss = async (request, response) => {
 
 exports.getSingleBossByName = async (request, response) => {
 	try {
-		const bossDetails = await Boss.findById(request.params.name);
+		const bossDetails = await Boss.findOne({ name: { $regex: request.params.name, $options: 'i' } });
 
 		response
 			.status(200)

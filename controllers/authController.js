@@ -94,8 +94,5 @@ exports.loginWithFacebookOrGoogle = catchAsync(async (req, res, next) => {
 	}
 
 	const accessToken = await user.generateToken();
-	res.status(200).json({
-		status: true,
-		data: { user, accessToken }
-	});
+	return sendResponse(res, 200, true, { user, accessToken }, null, "Login successful");
 });

@@ -1,5 +1,7 @@
 const { User } = require("../models/user");
 const jwt = require("jsonwebtoken");
+const { catchAsync } = require("../helpers/utilsHelper");
+const bcrypt = require("bcrypt");
 
 exports.login = async (req, res, next) => {
 	try {
@@ -42,10 +44,49 @@ exports.auth = async (req, res, next) => {
 };
 
 exports.isEditor = async (req, res, next) => {
-	try{	
+	try {
 		if (req.user.type != "editor") throw new Error("Unauthorized");
 	} catch (err) {
 		return res.status(401).json({ status: "fail", message: err.message });
 	}
 	next();
 };
+
+exports.loginWithFacebookOrGoogle = catchAsync(async (req, res, next) => {
+	let profile = req.user;
+	console.log(profile);
+	profile.email = profile.email.toLowerCase();
+	let user = await User.findOne({ email: profile.email });
+	console.log("hehehe", user);
+	const randomPassword = "" + Math.floor(Math.random() * 10000000);
+	const salt = await bcrypt.genSalt(10);
+	const newPassword = await bcrypt.hash(randomPassword, salt);
+	if (user) {
+		if (!user.emailVerified) {
+			await User.findByIdAndUpdate(
+				user._id,
+				{
+					$set: { emailVerified: true, avatarUrl: profile.avatarUrl },
+					$unset: { emailVerificationCode: 1 }
+				},
+				{ new: true }
+			);
+		} else {
+			await User.findByIdAndUpdate(user._id, { avatarUrl: profile.avatarUrl }, { new: true });
+		}
+	} else {
+		console.log("no user");
+		user = await User.create({
+			name: profile.name,
+			email: profile.email,
+			password: newPassword,
+			avatarUrl: profile.avatarUrl
+		});
+	}
+
+	const accessToken = await user.generateToken();
+	res.status(200).json({
+		status: true,
+		data: { user, accessToken }
+	});
+});

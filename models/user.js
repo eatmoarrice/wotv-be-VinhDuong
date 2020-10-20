@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema(
 		},
 		username: {
 			type: String,
-			required: [true, "Username is required"],
+			// required: [true, "Username is required"],
 			trim: true,
 			unique: true
 		},
@@ -29,8 +29,15 @@ const userSchema = new mongoose.Schema(
 			required: [true, "Password is required"]
 		},
 		type: { type: String, enum: ["user", "editor", "admin"], default: "user" },
-		tokens: Array
+		name: String,
+		avatarUrl: String,
+		firstName: String,
+		lastName: String,
+		id: String,
+		emailVerified: { type: Boolean, default: false },
+		emailVerificationCode: Number
 	},
+
 	{
 		timestamps: true
 	}

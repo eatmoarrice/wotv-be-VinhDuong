@@ -89,6 +89,25 @@ exports.getSingleBoss = async (request, response) => {
 	}
 };
 
+exports.getSingleBossByName = async (request, response) => {
+	try {
+		const bossDetails = await Boss.findOne({ name: { $regex: request.params.name, $options: 'i' } });
+
+		response
+			.status(200)
+			.json({
+				status: 'success',
+				data: bossDetails,
+			})
+			.send(bossDetails);
+	} catch (error) {
+		return response.status(400).json({
+			status: 'Fail',
+			message: error.message,
+		});
+	}
+};
+
 exports.createBoss = async (request, response) => {
 	try {
 		let boss = await Boss.findOne({ name: { $regex: request.body.name, $options: 'i' } });

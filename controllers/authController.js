@@ -52,6 +52,15 @@ exports.isEditor = async (req, res, next) => {
 	next();
 };
 
+exports.isAdmin = async (req, res, next) => {
+	try {
+		if (req.user.type != "admin") throw new Error("Unauthorized");
+	} catch (err) {
+		return res.status(401).json({ status: "fail", message: err.message });
+	}
+	next();
+};
+
 exports.loginWithFacebookOrGoogle = catchAsync(async (req, res, next) => {
 	let profile = req.user;
 	console.log(profile);

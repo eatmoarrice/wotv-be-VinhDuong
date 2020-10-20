@@ -3,8 +3,8 @@ const { getSingleSkill, createSkill } = require("../controllers/skillController"
 
 var router = express.Router();
 
-router.route("/skill/:name").get(getSingleSkill);
-router.route("/skill/create").post(createSkill);
+router.route("/:name").get(getSingleSkill);
+router.route("/create").post(createSkill);
 
 // .post(requiresLogin, requiresHost, createExperience)
 

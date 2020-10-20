@@ -3,24 +3,15 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
-var userRouter = require("./routes/users");
-const charactersRouter = require("./routes/characters");
-const jobRouter = require("./routes/jobs");
-const bossRouter = require("./routes/bosses");
-const profileRouter = require("./routes/profile");
-const skillRouter = require("./routes/skills");
-const boardRouter = require("./routes/boards");
-const authRouter = require("./routes/auth");
 require("dotenv").config({ path: ".env" });
 var app = express();
 const mongoose = require("mongoose");
 var cors = require("cors");
 const passport = require("passport");
 require("./helpers/passport");
+const indexRouter = require("./routes");
 
 // view engine setup
-app.options("*", cors());
-app.use(cors());
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "pug");
 
@@ -30,15 +21,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-app.use(charactersRouter);
-app.use(userRouter);
-app.use(skillRouter);
-app.use(jobRouter);
-app.use(bossRouter);
-app.use(boardRouter);
 
-app.use("/login", authRouter); //login
-// app.use("/profile", profileRouter);
+app.use("/", cors(), indexRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -65,6 +65,7 @@ userSchema.statics.loginWithEmail = async (email, password) => {
 
 userSchema.methods.generateToken = function () {
 	const user = this;
+	console.log(process.env.HASH_SECRET);
 	const token = jwt.sign({ id: user._id }, process.env.HASH_SECRET, { expiresIn: "7d" });
 	return token;
 };

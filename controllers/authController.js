@@ -1,6 +1,6 @@
 const { User } = require("../models/user");
 const jwt = require("jsonwebtoken");
-const { catchAsync } = require("../helpers/utilsHelper");
+const { catchAsync, sendResponse } = require("../helpers/utilsHelper");
 const bcrypt = require("bcrypt");
 
 exports.login = async (req, res, next) => {

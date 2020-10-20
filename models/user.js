@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
-require("dotenv");
+require("dotenv").config({ path: ".env" });
 const userSchema = new mongoose.Schema(
 	{
 		email: {

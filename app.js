@@ -10,6 +10,7 @@ var cors = require("cors");
 const passport = require("passport");
 require("./helpers/passport");
 const indexRouter = require("./routes");
+const utilsHelper = require("./helpers/utilsHelper");
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));

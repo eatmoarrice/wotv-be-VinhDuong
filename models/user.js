@@ -3,7 +3,8 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
-require("dotenv").config({ path: ".env" });
+const emailsHelper = require("../helpers/emailsHelper");
+const utilsHelper = require("../helpers/utilsHelper");
 const userSchema = new mongoose.Schema(
 	{
 		email: {
@@ -18,18 +19,16 @@ const userSchema = new mongoose.Schema(
 				}
 			}
 		},
-		username: {
+		name: {
 			type: String,
 			// required: [true, "Username is required"],
-			trim: true,
-			unique: true
+			trim: true
 		},
 		password: {
 			type: String,
 			required: [true, "Password is required"]
 		},
 		type: { type: String, enum: ["user", "editor", "admin"], default: "user" },
-		name: String,
 		avatarUrl: String,
 		firstName: String,
 		lastName: String,
@@ -46,6 +45,21 @@ const userSchema = new mongoose.Schema(
 userSchema.pre("save", async function (next) {
 	if (!this.isModified("password")) return next();
 	this.password = await bcrypt.hash(this.password, saltRounds);
+	next();
+});
+
+userSchema.pre("save", function (next) {
+	if (this.isNew) {
+		this.emailVerificationCode = utilsHelper.generateRandomHexString(15);
+		this.wasNew = true;
+	}
+	next();
+});
+
+userSchema.post("save", function (next) {
+	if (this.wasNew) {
+		emailsHelper.sendVerifyEmail(this);
+	}
 	next();
 });
 

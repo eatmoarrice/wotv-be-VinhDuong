@@ -1,5 +1,6 @@
 "use strict";
 const utilsHelper = {};
+const crypto = require("crypto");
 
 // This function controls the way we response to the client
 // If we need to change the way to response later on, we only need to handle it here

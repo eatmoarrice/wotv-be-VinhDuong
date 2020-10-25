@@ -7,7 +7,7 @@ router.use("/login", authAPI);
 
 //USER
 const userAPI = require("./user.api");
-router.use("/", userAPI);
+router.use("/register", userAPI);
 
 //CHARACTER
 const characterAPI = require("./character.api");

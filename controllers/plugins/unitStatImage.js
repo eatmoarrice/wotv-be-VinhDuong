@@ -23,14 +23,10 @@ cloudinary.config({
 console.log(process.env.CLOUD_API);
 
 const coords = {
-	boxWidth: 106,
-	boxDistance: 9,
-	firstRow: [450, 180],
-
-	borderTop: [50, 85],
-	borderBot: [173, 235],
-	name: [54, 425],
-	avatar: [48, 91],
+	borderTop: [36, 178],
+	borderBot: [208, 440],
+	name: [50, 721],
+	avatar: [37, 179],
 	job1: [],
 	job2: [],
 	job3: [],
@@ -64,11 +60,11 @@ const coords = {
 	doom: [959, 917],
 };
 
-module.exports = exports = async function createUnitResImage({ name, ref, stats, res, job1, job2, job3, rarity, element }) {
+module.exports = exports = async function createUnitResImage(name, ref, resistance, job1, job2, job3, rarity, element) {
 	try {
-		// if (fs.existsSync('public/img/char/' + ref + '.png')) {
-		// 	return '';
-		// }
+		if (fs.existsSync('public/img/char/' + ref + '.png')) {
+			return '';
+		}
 	} catch (err) {
 		console.error(err);
 	}
@@ -110,7 +106,7 @@ module.exports = exports = async function createUnitResImage({ name, ref, stats,
 	const avatar = await Jimp.read(`data/source/${ref}_m.png`);
 	avatar.autocrop(0.2);
 	let textImage = await Jimp.read('data/img/transparent.png');
-	let keys = Object.entries(res);
+	let keys = Object.entries(resistance);
 	if (keys[0][0] == '$init') keys.splice(0, 1);
 	for (const [key, value] of keys) {
 		console.log(`${key}: ${value}`);
@@ -120,34 +116,14 @@ module.exports = exports = async function createUnitResImage({ name, ref, stats,
 			if (value > 0) {
 				if (value >= 100) {
 					offsetX = 5;
-					number = 'Null';
+					number = 'Imm.';
 				}
 
 				textImage.composite(arrowUp, coords[key][0] + 38, coords[key][1] - 60);
-				textImage.print(
-					fontGreen,
-					coords[key][0] - offsetX,
-					coords[key][1],
-					{
-						text: number,
-						alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
-					},
-					coords.boxWidth,
-					0
-				);
+				textImage.print(fontGreen, coords[key][0] - offsetX, coords[key][1], number);
 			} else if (value < 0) {
 				textImage.composite(arrowDown, coords[key][0] + 38, coords[key][1] - 60);
-				textImage.print(
-					fontRed,
-					coords[key][0],
-					coords[key][1],
-					{
-						text: number,
-						alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
-					},
-					coords.boxWidth,
-					0
-				);
+				textImage.print(fontRed, coords[key][0], coords[key][1], number);
 			} else {
 				textImage.print(fontWhite, coords[key][0] + 27, coords[key][1], '--');
 			}
@@ -165,24 +141,24 @@ module.exports = exports = async function createUnitResImage({ name, ref, stats,
 			text: name,
 			alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
 		},
-		282,
+		316,
 		0
 	);
 	let avatarDim = {};
 	avatarDim.width = avatar.bitmap.width;
 	avatarDim.height = avatar.bitmap.height;
-	let leftGap = (304 - avatarDim.width) / 2;
-	let topGap = (327 - avatarDim.height) / 2;
-	baseImage.composite(j1, 57, 486);
-	baseImage.composite(j2, 157, 486);
-	baseImage.composite(j3, 257, 486);
-	// start of box is x = 36, y = 602,  width = 330, height = 68
+	let leftGap = (350 - avatarDim.width) / 2;
+	let topGap = (442 - avatarDim.height) / 2;
+	baseImage.composite(j1, 55, 620);
+	baseImage.composite(j2, 170, 620);
+	baseImage.composite(j3, 285, 620);
+	// start of box is x = 34, y = 777,  width = 356, height = 67
 	// element is 58x58
 	let rarityDim = {};
 	rarityDim.width = rarityImage.bitmap.width;
 	rarityDim.height = rarityImage.bitmap.height;
-	baseImage.composite(rarityImage, 36 + (330 - rarityDim.width + 58 + 30) / 2, 602 + (68 - rarityDim.height) / 2);
-	baseImage.composite(elementImage, 36 + (330 - (rarityDim.width + 58 + 30)) / 2, 602 + (68 - 58) / 2);
+	baseImage.composite(rarityImage, 34 + (356 - rarityDim.width + 58 + 30) / 2, 777 + (67 - rarityDim.height) / 2);
+	baseImage.composite(elementImage, 34 + (356 - (rarityDim.width + 58 + 30)) / 2, 777 + (67 - 58) / 2);
 	baseImage.composite(avatar, coords.avatar[0] + leftGap, coords.avatar[1] + topGap);
 	baseImage.composite(borderTop, coords.borderTop[0], coords.borderTop[1]);
 	baseImage.composite(borderBot, coords.borderBot[0], coords.borderBot[1]);
@@ -191,8 +167,8 @@ module.exports = exports = async function createUnitResImage({ name, ref, stats,
 	await baseImage.writeAsync('public/img/char/' + ref + '.png');
 	await compressPic('public/img/char/' + ref + '.png', 'public/img/char');
 	// await cloudinary.v2.uploader.upload('public/img/char/' + ref + '.png', { folder: 'unitRes' }, function (error, result) {
-	// 	console.log(result, error);
-	// 	url = result.url;
+	// console.log(result, error);
+	// url = result.url;
 	// });
 	return url;
 };

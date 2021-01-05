@@ -6,6 +6,10 @@ const charSchema = new mongoose.Schema({
 		// required: [true, "Name is required"],
 		trim: true,
 	},
+	jp_name: {
+		type: String,
+		trim: true,
+	},
 	nicknames: [
 		{
 			type: String,
@@ -65,8 +69,10 @@ const charSchema = new mongoose.Schema({
 		berserk: { type: Number, default: 0 },
 		doom: { type: Number, default: 0 },
 	},
+	master: String,
 	ref: String,
 	resImgUrl: String,
+	statImgUrl: String,
 });
 
 const Character = mongoose.model('Character', charSchema);

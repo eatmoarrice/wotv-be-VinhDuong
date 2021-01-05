@@ -4,7 +4,8 @@ const { response } = require('express');
 const { extractSheets } = require('spreadsheet-to-json');
 const fs = require('fs');
 const formatCell = (sheetTitle, columnTitle, value) => columnTitle.toLowerCase();
-const createImage = require('./plugins/unitResImage');
+const createImageRes = require('./plugins/unitResImage');
+const createImageStats = require('./plugins/unitStatImage');
 
 exports.getAllCharacters = async (request, response) => {
 	try {
@@ -71,7 +72,11 @@ exports.getSingleCharacter = async (request, response) => {
 				},
 			],
 		});
-		if (!charDetails) throw new Error('Not found!');
+		if (!charDetails)
+			return response.status(200).json({
+				status: 'fail',
+				data: {},
+			});
 		return response.status(200).json({
 			status: 'success',
 			data: charDetails,
@@ -195,7 +200,7 @@ exports.updateDatabase = async (request, response, next) => {
 					if (newObj.vetted && newObj.vetted === 'FALSE') newObj.vetted = false;
 					else newObj.vetted = true;
 					newArray.push(newObj);
-					console.log(newObj.vetted);
+					console.log(newObj);
 				});
 			}
 		);
@@ -241,9 +246,11 @@ exports.createResImg = async (req, res, next) => {
 	try {
 		const char = await Character.findById(req.params.id);
 		if (!char) throw new Error("Character doesn't exist!");
-		let newURL = await createImage(char);
-		char.resImgUrl = newURL;
-		// char.save();
+		let newURLRes = await createImageRes(char);
+		let newURLStat = await createImageStats(char);
+		char.resImgUrl = newURLRes;
+		char.statImgUrl = newURLStat;
+		char.save();
 		return res.status(200).json({ status: true, message: 'success!' });
 	} catch (err) {
 		res.status(400).json({ status: false, message: err });
@@ -254,10 +261,15 @@ exports.createResAll = async (req, res, next) => {
 	try {
 		const cursor = Character.find({ vetted: true });
 		for await (const char of cursor) {
-			let url = await createImage(char);
+			let url = await createImageRes(char);
 			if (url) {
 				char.resImgUrl = url;
-				// await char.save();
+				await char.save();
+			} else console.log('no url');
+			let url2 = await createImageStats(char);
+			if (url2) {
+				char.statImgUrl = url2;
+				await char.save();
 			} else console.log('no url');
 		}
 		return res.status(200).json({ status: true, message: 'success!' });

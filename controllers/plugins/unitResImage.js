@@ -8,7 +8,7 @@ const baseImageUrl = 'data/baseImages/res.png';
 const fontGreenUrl = 'data/font/georgia_32_green.fnt';
 const fontWhiteUrl = 'data/font/georgia_32_white.fnt';
 const fontRedUrl = 'data/font/georgia_32_red.fnt';
-const fontTealUrl = 'data/font/georgia_32_teal.fnt';
+const fontTealUrl = 'data/font/georgia_28_grad2.fnt';
 const smallfontTealUrl = 'data/font/georgia_26_teal.fnt';
 const arrowUpUrl = 'data/img/up.png';
 const arrowDownUrl = 'data/img/down.png';
@@ -21,12 +21,18 @@ cloudinary.config({
 });
 
 console.log(process.env.CLOUD_API);
+const boxWidth = 106;
+const boxDistance = 9;
+const row = [170, 295, 372, 493, 568, 653];
+const col = [];
+const baseCol = 450;
+for (let i = 0; i < 5; i++) {
+	col.push((+boxWidth + boxDistance) * (i + 1) - boxWidth - boxDistance + baseCol);
+}
+
+console.log(col);
 
 const coords = {
-	boxWidth: 106,
-	boxDistance: 9,
-	firstRow: [450, 180],
-
 	borderTop: [50, 85],
 	borderBot: [173, 235],
 	name: [54, 425],
@@ -34,41 +40,41 @@ const coords = {
 	job1: [],
 	job2: [],
 	job3: [],
-	slash: [475, 237],
-	pierce: [596, 237],
-	strike: [717, 237],
-	missile: [838, 237],
-	magic: [959, 237],
-	fire: [475, 399],
-	ice: [596, 399],
-	earth: [717, 399],
-	wind: [838, 399],
-	lightning: [475, 516],
-	water: [596, 516],
-	light: [717, 516],
-	dark: [838, 516],
-	poison: [475, 680],
-	blind: [596, 680],
-	sleep: [717, 680],
-	silence: [838, 680],
-	paralyze: [959, 680],
-	confusion: [475, 800],
-	petrify: [596, 800],
-	toad: [717, 800],
-	charm: [838, 800],
-	slow: [959, 800],
-	stop: [475, 917],
-	immobilize: [596, 917],
-	disable: [717, 917],
-	berserk: [838, 917],
-	doom: [959, 917],
+	slash: [col[0], row[0]],
+	pierce: [col[1], row[0]],
+	strike: [col[2], row[0]],
+	missile: [col[3], row[0]],
+	magic: [col[4], row[0]],
+	fire: [col[0], row[1]],
+	ice: [col[1], row[1]],
+	earth: [col[2], row[1]],
+	wind: [col[3], row[1]],
+	lightning: [col[0], row[2]],
+	water: [col[1], row[2]],
+	light: [col[2], row[2]],
+	dark: [col[3], row[2]],
+	poison: [col[0], row[3]],
+	blind: [col[1], row[3]],
+	sleep: [col[2], row[3]],
+	silence: [col[3], row[3]],
+	paralyze: [col[4], row[3]],
+	confusion: [col[0], row[4]],
+	petrify: [col[1], row[4]],
+	toad: [col[2], row[4]],
+	charm: [col[3], row[4]],
+	slow: [col[4], row[4]],
+	stop: [col[0], row[5]],
+	immobilize: [col[1], row[5]],
+	disable: [col[2], row[5]],
+	berserk: [col[3], row[5]],
+	doom: [col[4], row[5]],
 };
-
-module.exports = exports = async function createUnitResImage({ name, ref, stats, res, job1, job2, job3, rarity, element }) {
+console.log(coords);
+module.exports = exports = async function createUnitResImage({ name, ref, res, job1, job2, job3, rarity, element }) {
 	try {
-		// if (fs.existsSync('public/img/char/' + ref + '.png')) {
-		// 	return '';
-		// }
+		if (fs.existsSync('public/img/char/' + ref + '.png')) {
+			return '';
+		}
 	} catch (err) {
 		console.error(err);
 	}
@@ -88,55 +94,55 @@ module.exports = exports = async function createUnitResImage({ name, ref, stats,
 	let j1, j2, j3;
 	let url = '';
 	try {
-		j1 = await Jimp.read(`data/img/mainjob/${job1.replace(/[^a-z0-9]+/gi, '')}.png`);
+		j1 = await Jimp.read(`data/img/mainjob/${job1}.png`);
 	} catch (err) {
 		j1 = await Jimp.read(`data/img/mainjob/unknown.png`);
 	}
 
 	try {
-		j2 = await Jimp.read(`data/img/subjob/${job2.replace(/[^a-z0-9]+/gi, '')}.png`);
+		j2 = await Jimp.read(`data/img/subjob/${job2}.png`);
 	} catch (err) {
 		j2 = await Jimp.read(`data/img/subjob/unknown.png`);
 	}
 
 	try {
-		j3 = await Jimp.read(`data/img/subjob/${job3.replace(/[^a-z0-9]+/gi, '')}.png`);
+		j3 = await Jimp.read(`data/img/subjob/${job3}.png`);
 	} catch (err) {
 		j3 = await Jimp.read(`data/img/subjob/unknown.png`);
 	}
 
-	arrowUp.resize(Jimp.AUTO, 60);
-	arrowDown.resize(Jimp.AUTO, 60);
+	arrowUp.resize(Jimp.AUTO, 40);
+	arrowDown.resize(Jimp.AUTO, 40);
 	const avatar = await Jimp.read(`data/source/${ref}_m.png`);
-	avatar.autocrop(0.2);
+	// avatar.autocrop(0.2);
+	avatar.resize(Jimp.AUTO, 240);
 	let textImage = await Jimp.read('data/img/transparent.png');
 	let keys = Object.entries(res);
 	if (keys[0][0] == '$init') keys.splice(0, 1);
 	for (const [key, value] of keys) {
 		console.log(`${key}: ${value}`);
 		let number = value + '%';
-		let offsetX = 0;
+
 		try {
 			if (value > 0) {
 				if (value >= 100) {
-					offsetX = 5;
 					number = 'Null';
 				}
 
-				textImage.composite(arrowUp, coords[key][0] + 38, coords[key][1] - 60);
+				textImage.composite(arrowUp, coords[key][0] + 70, coords[key][1] - 30);
 				textImage.print(
 					fontGreen,
-					coords[key][0] - offsetX,
+					coords[key][0],
 					coords[key][1],
 					{
 						text: number,
 						alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
 					},
-					coords.boxWidth,
+					boxWidth,
 					0
 				);
 			} else if (value < 0) {
-				textImage.composite(arrowDown, coords[key][0] + 38, coords[key][1] - 60);
+				textImage.composite(arrowDown, coords[key][0] + 70, coords[key][1] - 30);
 				textImage.print(
 					fontRed,
 					coords[key][0],
@@ -145,11 +151,21 @@ module.exports = exports = async function createUnitResImage({ name, ref, stats,
 						text: number,
 						alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
 					},
-					coords.boxWidth,
+					boxWidth,
 					0
 				);
 			} else {
-				textImage.print(fontWhite, coords[key][0] + 27, coords[key][1], '--');
+				textImage.print(
+					fontWhite,
+					coords[key][0],
+					coords[key][1],
+					{
+						text: `--`,
+						alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
+					},
+					boxWidth,
+					0
+				);
 			}
 		} catch (err) {
 			console.log(err);
@@ -184,16 +200,16 @@ module.exports = exports = async function createUnitResImage({ name, ref, stats,
 	baseImage.composite(rarityImage, 36 + (330 - rarityDim.width + 58 + 30) / 2, 602 + (68 - rarityDim.height) / 2);
 	baseImage.composite(elementImage, 36 + (330 - (rarityDim.width + 58 + 30)) / 2, 602 + (68 - 58) / 2);
 	baseImage.composite(avatar, coords.avatar[0] + leftGap, coords.avatar[1] + topGap);
-	baseImage.composite(borderTop, coords.borderTop[0], coords.borderTop[1]);
-	baseImage.composite(borderBot, coords.borderBot[0], coords.borderBot[1]);
+	// baseImage.composite(borderTop, coords.borderTop[0], coords.borderTop[1]);
+	// baseImage.composite(borderBot, coords.borderBot[0], coords.borderBot[1]);
 	baseImage.composite(textImage, 0, 0, { mode: Jimp.BLEND_SOURCE_OVER, opacityDest: 1, opacitySource: 1 });
 
 	await baseImage.writeAsync('public/img/char/' + ref + '.png');
 	await compressPic('public/img/char/' + ref + '.png', 'public/img/char');
-	// await cloudinary.v2.uploader.upload('public/img/char/' + ref + '.png', { folder: 'unitRes' }, function (error, result) {
-	// 	console.log(result, error);
-	// 	url = result.url;
-	// });
+	await cloudinary.v2.uploader.upload('public/img/char/' + ref + '.png', { folder: 'unitRes' }, function (error, result) {
+		console.log(result, error);
+		url = result.url;
+	});
 	return url;
 };
 

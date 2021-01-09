@@ -70,9 +70,9 @@ const coords = {
 	doom: [col[4], row[5]],
 };
 console.log(coords);
-module.exports = exports = async function createUnitResImage({ name, ref, res, job1, job2, job3, rarity, element }) {
+module.exports = exports = async function createUnitResImage({ name, ref, res, job1, job2, job3, rarity, element }, willReplace) {
 	try {
-		if (fs.existsSync('public/img/char/' + ref + '.png')) {
+		if (fs.existsSync('public/img/char/' + ref + '.png') && willReplace) {
 			return '';
 		}
 	} catch (err) {

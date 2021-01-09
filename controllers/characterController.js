@@ -17,7 +17,7 @@ exports.getAllCharacters = async (request, response) => {
 			{
 				vetted: true,
 			},
-			{ desc: 0, fullName: 0, board: 0 }
+			{ desc: 0, board: 0 }
 		);
 
 		const numDocuments = await Character.countDocuments();
@@ -29,7 +29,35 @@ exports.getAllCharacters = async (request, response) => {
 		});
 	} catch (error) {
 		return response.status(400).json({
-			status: 'Fail',
+			status: 'fail',
+			message: error,
+		});
+	}
+};
+
+exports.getAllCharacterNames = async (request, response) => {
+	try {
+		// const element = request.query.element || "";
+		// const rarity = request.query.rarity || "";
+		// const job = requiest.query.job || "";
+
+		const charList = await Character.find(
+			{
+				vetted: true,
+			},
+			{ name: 1 }
+		);
+
+		const numDocuments = await Character.countDocuments();
+
+		response.status(200).json({
+			status: 'success',
+			data: charList,
+			total: numDocuments,
+		});
+	} catch (error) {
+		return response.status(400).json({
+			status: 'fail',
 			message: error,
 		});
 	}
@@ -49,7 +77,7 @@ exports.getSingleCharacterByID = async (request, response) => {
 		});
 	} catch (error) {
 		return response.status(400).json({
-			status: 'Fail',
+			status: 'fail',
 			message: error,
 		});
 	}
@@ -84,7 +112,7 @@ exports.getSingleCharacter = async (request, response) => {
 	} catch (error) {
 		console.log(error);
 		return response.status(400).json({
-			status: 'Fail',
+			status: 'fail',
 			message: error,
 		});
 	}
@@ -101,7 +129,7 @@ exports.createCharacter = async (request, response) => {
 		return response.send({ status: 'success', name: char.name });
 	} catch (error) {
 		return response.status(400).json({
-			status: 'Fail',
+			status: 'fail',
 			message: 'Could not create new character',
 		});
 	}
@@ -122,7 +150,7 @@ exports.editCharacter = async (request, response, next) => {
 	} catch (error) {
 		console.log(error);
 		return response.status(400).json({
-			status: 'Fail',
+			status: 'fail',
 			message: error.message,
 		});
 	}
@@ -236,7 +264,7 @@ exports.updateDatabase = async (request, response, next) => {
 	} catch (error) {
 		console.log(error);
 		return response.status(400).json({
-			status: 'Fail',
+			status: 'fail',
 			message: error,
 		});
 	}
@@ -246,11 +274,11 @@ exports.createResImg = async (req, res, next) => {
 	try {
 		const char = await Character.findById(req.params.id);
 		if (!char) throw new Error("Character doesn't exist!");
-		let newURLRes = await createImageRes(char);
-		let newURLStat = await createImageStats(char);
+		let newURLRes = await createImageRes(char, false);
+		let newURLStat = await createImageStats(char, false);
 		char.resImgUrl = newURLRes;
 		char.statImgUrl = newURLStat;
-		char.save();
+		await char.save();
 		return res.status(200).json({ status: true, message: 'success!' });
 	} catch (err) {
 		res.status(400).json({ status: false, message: err });
@@ -261,12 +289,12 @@ exports.createResAll = async (req, res, next) => {
 	try {
 		const cursor = Character.find({ vetted: true });
 		for await (const char of cursor) {
-			let url = await createImageRes(char);
+			let url = await createImageRes(char, true);
 			if (url) {
 				char.resImgUrl = url;
 				await char.save();
 			} else console.log('no url');
-			let url2 = await createImageStats(char);
+			let url2 = await createImageStats(char, true);
 			if (url2) {
 				char.statImgUrl = url2;
 				await char.save();

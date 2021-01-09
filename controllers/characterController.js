@@ -86,10 +86,10 @@ exports.getSingleCharacterByID = async (request, response) => {
 exports.getSingleCharacter = async (request, response) => {
 	try {
 		let name = request.params.name;
-		console.log(name);
+		console.log('Name param:', name);
 		const charDetails = await Character.findOne({
 			$or: [
-				{ name: { $regex: '^' + name + '$', $options: 'i' } },
+				{ name },
 				{
 					nicknames: {
 						$elemMatch: {
@@ -99,7 +99,7 @@ exports.getSingleCharacter = async (request, response) => {
 					},
 				},
 			],
-		});
+		}).collation({ locale: 'en', strength: 2 });
 		if (!charDetails)
 			return response.status(200).json({
 				status: 'fail',

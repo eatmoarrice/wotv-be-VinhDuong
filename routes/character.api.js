@@ -21,12 +21,12 @@ router.route('/id/:id').get(getSingleCharacterByID);
 router.route('/:name').get(getSingleCharacter);
 router.route('/id/:id/update').put(editCharacter);
 router.route('/create').post(createCharacter);
-router.route('/update/update-database').get(updateDatabase);
-// router.route('/update/update-database').get(auth, isAdmin, updateDatabase);
-router.route('/image/createAll').post(createResAll);
-router.route('/image/:id').post(createResImg);
-// router.route('/image/:id').post(auth, isAdmin, createResImg);
-// router.route('/image/createAll').post(auth, isAdmin, createResAll);
+// router.route('/update/update-database').get(updateDatabase);
+router.route('/update/update-database').get(auth, isAdmin, updateDatabase);
+// router.route('/image/createAll').post(createResAll);
+// router.route('/image/:id').post(createResImg);
+router.route('/image/:id').post(auth, isAdmin, createResImg);
+router.route('/image/createAll').post(auth, isAdmin, createResAll);
 
 // .post(requiresLogin, requiresHost, createExperience)
 

@@ -31,7 +31,7 @@
 		"passport-facebook": "^3.0.0",
 		"passport-facebook-token": "^4.0.0",
 		"passport-google-token": "^0.1.2",
-		"pug": "^3.0.0",
+		"pug": "^3.0.1",
 		"spreadsheet-to-json": "^2.0.0",
 		"validator": "^13.1.17"
 	}

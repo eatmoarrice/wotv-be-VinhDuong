@@ -200,12 +200,12 @@ exports.updateDatabase = async (request, response, next) => {
 				// your google oauth2 credentials or API_KEY
 				credentials: require('../cred/cred.json'),
 				// optional: names of the sheets you want to extract
-				sheetsToExtract: ['forPanda'],
+				sheetsToExtract: ['GLStats'],
 				// optional: custom function to parse the cells
 				// formatCell: formatCell
 			},
 			function (err, data) {
-				data.forPanda.forEach((item) => {
+				data.GLStats.forEach((item) => {
 					let newObj = { res: {}, stats: {} };
 					for (let [key, value] of Object.entries(item)) {
 						// if (skip.includes(key.toLowerCase())) {
@@ -218,7 +218,7 @@ exports.updateDatabase = async (request, response, next) => {
 							newObj.stats[key.toLowerCase()] = parseInt(processedValue) || 0;
 						} else if (resArray.includes(key.toLowerCase())) {
 							newObj.res[key.toLowerCase()] = parseInt(processedValue) || 0;
-						} else if (key.toLowerCase() === 'nicknames') {
+						} else if (key.toLowerCase() === 'nickname') {
 							if (processedValue) {
 								newObj.nicknames = processedValue.split(',');
 								console.log('hahahahaah', processedValue.split(','));
@@ -235,7 +235,7 @@ exports.updateDatabase = async (request, response, next) => {
 		// console.log(newArray);
 		let successArray = [];
 		for (let i = 0; i < newArray.length; i++) {
-			if (!newArray[i].name) continue;
+			if (!newArray[i].name || newArray[i].vetted === false) continue;
 			let char = await Character.findOne({ name: newArray[i].name });
 			// console.log(newArray[i].name, ': ', char);
 			if (!char) {
@@ -293,12 +293,12 @@ exports.createResAll = async (req, res, next) => {
 			if (url) {
 				char.resImgUrl = url;
 				await char.save();
-			} else console.log('no url');
+			} else console.log('no url for ', char.name);
 			let url2 = await createImageStats(char, true);
 			if (url2) {
 				char.statImgUrl = url2;
 				await char.save();
-			} else console.log('no url');
+			} else console.log('no url for', char.name);
 		}
 		return res.status(200).json({ status: true, message: 'success!' });
 	} catch (err) {

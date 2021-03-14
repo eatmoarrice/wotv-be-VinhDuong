@@ -60,7 +60,7 @@ const coords = {
 	acc: [col[1], row[7]],
 	master: [480, 610],
 };
-console.log(coords);
+
 module.exports = exports = async function createUnitResImage({ master, name, ref, stats, job1, job2, job3, rarity, element }, willReplace) {
 	try {
 		if (fs.existsSync('public/img/char/' + ref + '_stats.png') && willReplace) {
@@ -69,6 +69,7 @@ module.exports = exports = async function createUnitResImage({ master, name, ref
 	} catch (err) {
 		console.error(err);
 	}
+	console.log('ref for ', name, 'is ', ref);
 	const borderTop = await Jimp.read(`data/img/frame/${rarity}.png`);
 	borderTop.rotate(180);
 	const borderBot = await Jimp.read(`data/img/frame/${rarity}.png`);

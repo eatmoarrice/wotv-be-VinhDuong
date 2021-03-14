@@ -69,7 +69,7 @@ const coords = {
 	berserk: [col[3], row[5]],
 	doom: [col[4], row[5]],
 };
-console.log(coords);
+
 module.exports = exports = async function createUnitResImage({ name, ref, res, job1, job2, job3, rarity, element }, willReplace) {
 	try {
 		if (fs.existsSync('public/img/char/' + ref + '.png') && willReplace) {
@@ -78,6 +78,7 @@ module.exports = exports = async function createUnitResImage({ name, ref, res, j
 	} catch (err) {
 		console.error(err);
 	}
+	console.log('ref for ', name, 'is ', ref);
 	const borderTop = await Jimp.read(`data/img/frame/${rarity}.png`);
 	borderTop.rotate(180);
 	const borderBot = await Jimp.read(`data/img/frame/${rarity}.png`);
